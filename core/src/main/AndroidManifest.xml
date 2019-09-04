@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="net.gridtech.display.core">
-
     <application>
         <activity android:name=".CoreActivity">
+            <intent-filter>
+                <action android:name="net.gridtech.display.core.CoreActivity"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+        <service
+                android:name=".CoreService"
+                android:enabled="true"
+                android:exported="false">
+        </service>
     </application>
-
 </manifest>

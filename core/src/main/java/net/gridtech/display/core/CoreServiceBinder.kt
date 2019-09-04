@@ -13,6 +13,8 @@ import net.gridtech.display.core.dao.NodeDao
 import net.gridtech.core.Bootstrap
 import net.gridtech.core.data.IHostInfo
 import net.gridtech.core.util.hostInfoPublisher
+import net.gridtech.core.util.parse
+import net.gridtech.core.util.stringfy
 import net.gridtech.machine.model.DataHolder
 
 
@@ -21,17 +23,18 @@ class CoreServiceBinder(private val coreService: CoreService) : Binder() {
     private val bootstrap: Bootstrap
     val dataHolder: DataHolder
 
-    private val objectMapper = ObjectMapper().registerModule(KotlinModule())
     private val preference = coreService.getSharedPreferences("host_info", Activity.MODE_PRIVATE)
-    private var hostInfo: IHostInfo? = preference.getString("hostInfo", null)?.let {
-        objectMapper.readValue<Bootstrap.HostInfoStub>(it)
+    var hostInfo: IHostInfo? = preference.getString("hostInfo", null)?.let {
+        parse<Bootstrap.HostInfoStub>(it)
     }
 
     init {
+        System.err.println("--------------------------")
         hostInfoPublisher.subscribe { hostInfo ->
+            System.err.println(hostInfo)
             if (this.hostInfo != hostInfo) {
                 this.hostInfo = hostInfo
-                preference.edit().putString("accessParentInfo", objectMapper.writeValueAsString(hostInfo)).apply()
+                preference.edit().putString("accessParentInfo", stringfy(hostInfo)).apply()
             }
         }
         bootstrap = Bootstrap(

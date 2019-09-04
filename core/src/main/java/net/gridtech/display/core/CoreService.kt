@@ -7,6 +7,7 @@ import android.os.IBinder
 class CoreService : Service() {
     private var binder: CoreServiceBinder? = null
     override fun onBind(intent: Intent): IBinder {
+        System.err.println("AAAAAAAAAAAAAAA")
         if (binder == null) {
             binder = CoreServiceBinder(this)
         }
