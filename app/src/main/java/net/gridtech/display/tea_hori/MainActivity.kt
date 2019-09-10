@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity(),ServiceConnection  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        System.err.println("++++++++++++++++")
         bindService(
             Intent(this, CoreService::class.java),
             this,
@@ -28,10 +27,14 @@ class MainActivity : AppCompatActivity(),ServiceConnection  {
         }
     }
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        System.err.println("========================")
         binder = service as CoreServiceBinder
     }
     override fun onServiceDisconnected(name: ComponentName?) {
         binder = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService(this)
     }
 }

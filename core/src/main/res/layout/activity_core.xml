@@ -13,6 +13,10 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" app:srcCompat="@android:drawable/btn_star"
+                android:id="@+id/connectionIcon" android:layout_weight="1"/>
         <TextView
                 android:text="ID"
                 android:gravity="center"

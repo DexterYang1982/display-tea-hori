@@ -20,7 +20,7 @@ import net.gridtech.machine.model.DataHolder
 
 class CoreServiceBinder(private val coreService: CoreService) : Binder() {
     var viewContext: Context? = null
-    private val bootstrap: Bootstrap
+    val bootstrap: Bootstrap
     val dataHolder: DataHolder
 
     private val preference = coreService.getSharedPreferences("host_info", Activity.MODE_PRIVATE)
@@ -29,12 +29,10 @@ class CoreServiceBinder(private val coreService: CoreService) : Binder() {
     }
 
     init {
-        System.err.println("--------------------------")
         hostInfoPublisher.subscribe { hostInfo ->
-            System.err.println(hostInfo)
             if (this.hostInfo != hostInfo) {
                 this.hostInfo = hostInfo
-                preference.edit().putString("accessParentInfo", stringfy(hostInfo)).apply()
+                preference.edit().putString("hostInfo", stringfy(hostInfo)).apply()
             }
         }
         bootstrap = Bootstrap(
@@ -46,6 +44,9 @@ class CoreServiceBinder(private val coreService: CoreService) : Binder() {
         )
         bootstrap.startHostInfoChangServer(54321)
         dataHolder = DataHolder(bootstrap, null)
+        hostInfo?.apply {
+            hostInfoPublisher.onNext(this)
+        }
     }
 
 }
