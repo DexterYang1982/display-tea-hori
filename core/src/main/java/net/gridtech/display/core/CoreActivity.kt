@@ -13,24 +13,28 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_core.*
 import net.gridtech.core.Bootstrap
 import net.gridtech.core.util.hostInfoPublisher
+import net.gridtech.display.core.view.EntityInfo
 
 
 class CoreActivity : AppCompatActivity(), ServiceConnection {
     var binder: CoreServiceBinder? = null
+    val disposables = ArrayList<Disposable>()
     val handler = Handler()
     override fun onResume() {
         super.onResume()
-        window.decorView.systemUiVisibility  = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_core)
-        window.decorView.systemUiVisibility  = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
 
@@ -58,16 +62,8 @@ class CoreActivity : AppCompatActivity(), ServiceConnection {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         binder = service as CoreServiceBinder
         showHostInfo()
-        binder?.bootstrap?.connectionObservable()?.subscribe {
-            handler.post {
-                if (it) {
-                    connectionIcon.setColorFilter(Color.GREEN)
-                } else {
-                    connectionIcon.setColorFilter(Color.RED)
-                }
-            }
-        }
-
+        bindConnection()
+        showEntityInfo()
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
@@ -76,13 +72,41 @@ class CoreActivity : AppCompatActivity(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
+        disposables.forEach { it.dispose() }
         unbindService(this)
     }
 
-    fun showHostInfo() {
+    private fun showHostInfo() {
         nodeId.setText(binder?.hostInfo?.nodeId)
         nodeSecret.setText(binder?.hostInfo?.nodeSecret)
         parentAccess.setText(binder?.hostInfo?.parentEntryPoint)
+    }
+
+    private fun bindConnection() {
+        binder?.bootstrap?.connectionObservable()?.subscribe {
+            handler.post {
+                if (it) {
+                    connectionIcon.setColorFilter(Color.GREEN)
+                } else {
+                    connectionIcon.setColorFilter(Color.RED)
+                }
+            }
+        }?.apply {
+            disposables.add(this)
+        }
+    }
+
+    private fun showEntityInfo() {
+        binder?.dataHolder?.getEntityByConditionObservable { entity -> entity.parentId() == null }
+            ?.subscribe { entity ->
+                System.err.println(entity.name.value)
+                handler.post {
+                    val entityInfo = EntityInfo(this.baseContext)
+                    entityInfoContainer.addView(entityInfo)
+                }
+            }?.apply {
+                disposables.add(this)
+            }
     }
 
     override fun dispatchTouchEvent(me: MotionEvent): Boolean {
