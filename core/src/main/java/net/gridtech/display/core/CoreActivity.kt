@@ -99,10 +99,13 @@ class CoreActivity : AppCompatActivity(), ServiceConnection {
     private fun showEntityInfo() {
         binder?.dataHolder?.getEntityByConditionObservable { entity -> entity.parentId() == null }
             ?.subscribe { entity ->
-                System.err.println(entity.name.value)
+                val entityInfo = EntityInfo(handler, binder?.dataHolder!!, entity, this.baseContext)
                 handler.post {
-                    val entityInfo = EntityInfo(this.baseContext)
                     entityInfoContainer.addView(entityInfo)
+                }
+                entity.onDelete().subscribe { _, _ ->
+                    entityInfo.onRemove()
+                    entityInfoContainer.removeView(entityInfo)
                 }
             }?.apply {
                 disposables.add(this)
