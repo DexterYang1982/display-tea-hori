@@ -73,7 +73,7 @@ class CoreActivity : AppCompatActivity(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         disposables.forEach { it.dispose() }
-        unbindService(this)
+//        unbindService(this)
     }
 
     private fun showHostInfo() {
