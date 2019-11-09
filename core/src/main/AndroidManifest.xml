@@ -4,7 +4,7 @@
     <application>
         <activity android:name=".CoreActivity">
             <intent-filter>
-                <action android:name="net.gridtech.display.core.CoreActivity"/>
+                <action android:name="core"/>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

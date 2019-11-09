@@ -1,50 +1,27 @@
 package net.gridtech.display.core
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.graphics.Color
-import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_core.*
 import net.gridtech.core.Bootstrap
 import net.gridtech.core.util.hostInfoPublisher
+import net.gridtech.display.core.view.BaseView
 import net.gridtech.display.core.view.EntityInfo
 
 
-class CoreActivity : AppCompatActivity(), ServiceConnection {
-    var binder: CoreServiceBinder? = null
-    val disposables = ArrayList<Disposable>()
-    val handler = Handler()
-    override fun onResume() {
-        super.onResume()
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+class CoreActivity : BaseView() {
+    override fun shouldStartService(): Boolean = false
+    override fun shouldBindService(): Boolean = true
+    override fun setLayout() {
+        setContentView(R.layout.activity_core)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_core)
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-
-
-        bindService(
-            Intent(this, CoreService::class.java),
-            this,
-            Context.BIND_AUTO_CREATE
-        )
-
+    override fun initLogic() {
         updateHostInfo.setOnClickListener {
             hostInfoPublisher.onNext(
                 Bootstrap.HostInfoStub(
@@ -54,26 +31,12 @@ class CoreActivity : AppCompatActivity(), ServiceConnection {
                 )
             )
         }
-        back.setOnClickListener {
-            finish()
-        }
     }
 
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        binder = service as CoreServiceBinder
+    override fun onServiceBind(binder: CoreServiceBinder) {
         showHostInfo()
         bindConnection()
         showEntityInfo()
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        binder = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.forEach { it.dispose() }
-//        unbindService(this)
     }
 
     private fun showHostInfo() {

@@ -13,42 +13,93 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView
-                android:text="Orientation"
+                android:text="Function"
                 android:layout_gravity="center_vertical"
                 android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView1"/>
+                android:layout_height="wrap_content"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
             <Button
-                    android:text="Rotate"
+                    android:text="Rotate Screen"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/rotateBtn"/>
+                    android:id="@+id/rotateBtn"
+                    android:layout_marginEnd="20dp"/>
+            <Button
+                    android:text="Core Service View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/coreBtn"
+                    android:layout_marginEnd="20dp"/>
+            <Button
+                    android:text="UI Manager Control"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/uiManagerBtn"
+                    android:layout_marginEnd="20dp"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
         <TextView
-                android:text="Core View"
+                android:text="Views"
                 android:layout_gravity="center_vertical"
                 android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView2"/>
+                android:layout_height="wrap_content"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
             <Button
-                    android:text="Core View"
+                    android:text="Wall Paper"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/coreView"/>
+                    android:id="@+id/wallPaperBtn"
+                    android:layout_marginEnd="20dp"/>
+            <Button
+                    android:text="View 2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/view2"
+                    android:layout_marginEnd="20dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+    />
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:text="XXX"
+                android:layout_gravity="center_vertical"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <Button
+                    android:text="View 1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/view3"
+                    android:layout_marginEnd="20dp"/>
+            <Button
+                    android:text="View 2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/view4"
+                    android:layout_marginEnd="20dp"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
