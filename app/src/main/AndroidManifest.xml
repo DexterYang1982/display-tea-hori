@@ -14,19 +14,33 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <service
+                android:name=".ui.UIService"
+                android:enabled="true"
+                android:exported="false">
+        </service>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="main"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".ui.WallPaper">
             <intent-filter>
                 <action android:name="wallPaper"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.WallPaperV">
+            <intent-filter>
+                <action android:name="wallPaperV"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>

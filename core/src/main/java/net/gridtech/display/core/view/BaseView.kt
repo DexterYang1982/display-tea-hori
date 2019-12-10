@@ -16,9 +16,10 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import net.gridtech.display.core.CoreService
 import net.gridtech.display.core.CoreServiceBinder
+import net.gridtech.display.core.R
 
 abstract class BaseView : AppCompatActivity(), ServiceConnection {
-    protected var binder: CoreServiceBinder? = null
+    protected var coreServiceBinder: CoreServiceBinder? = null
     protected val disposables = ArrayList<Disposable>()
     protected val handler = Handler()
     private val tripleClickSubject = PublishSubject.create<Long>().apply {
@@ -93,17 +94,17 @@ abstract class BaseView : AppCompatActivity(), ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val b = service as CoreServiceBinder
-        binder = b
+        coreServiceBinder = b
         onServiceBind(b)
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-        binder = null
+        coreServiceBinder = null
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (binder != null) {
+        if (coreServiceBinder != null) {
             unbindService(this)
         }
     }

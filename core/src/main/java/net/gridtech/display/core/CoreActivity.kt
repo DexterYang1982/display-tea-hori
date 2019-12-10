@@ -40,13 +40,13 @@ class CoreActivity : BaseView() {
     }
 
     private fun showHostInfo() {
-        nodeId.setText(binder?.hostInfo?.nodeId)
-        nodeSecret.setText(binder?.hostInfo?.nodeSecret)
-        parentAccess.setText(binder?.hostInfo?.parentEntryPoint)
+        nodeId.setText(coreServiceBinder?.hostInfo?.nodeId)
+        nodeSecret.setText(coreServiceBinder?.hostInfo?.nodeSecret)
+        parentAccess.setText(coreServiceBinder?.hostInfo?.parentEntryPoint)
     }
 
     private fun bindConnection() {
-        binder?.bootstrap?.connectionObservable()?.subscribe {
+        coreServiceBinder?.bootstrap?.connectionObservable()?.subscribe {
             handler.post {
                 if (it) {
                     connectionIcon.setColorFilter(Color.GREEN)
@@ -60,9 +60,9 @@ class CoreActivity : BaseView() {
     }
 
     private fun showEntityInfo() {
-        binder?.dataHolder?.getEntityByConditionObservable { entity -> entity.parentId() == null }
+        coreServiceBinder?.dataHolder?.getEntityByConditionObservable { entity -> entity.parentId() == null }
             ?.subscribe { entity ->
-                val entityInfo = EntityInfo(handler, binder?.dataHolder!!, entity, this.baseContext)
+                val entityInfo = EntityInfo(handler, coreServiceBinder?.dataHolder!!, entity, this.baseContext)
                 handler.post {
                     entityInfoContainer.addView(entityInfo)
                 }
