@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
-import net.gridtech.display.core.CoreService
 import net.gridtech.display.core.view.BaseView
 import net.gridtech.display.tea_hori.ui.UIService
 
@@ -15,10 +14,11 @@ class MainActivity : BaseView() {
     override fun setLayout() {
         setContentView(R.layout.activity_main)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val intent=Intent(this, UIService::class.java)
-        intent.putExtra("orientation",requestedOrientation)
+        val intent = Intent(this, UIService::class.java)
+        intent.putExtra("orientation", requestedOrientation)
         startService(intent)
     }
 
@@ -34,17 +34,24 @@ class MainActivity : BaseView() {
                 ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
-            val intent=Intent(this, UIService::class.java)
-            intent.putExtra("orientation",requestedOrientation)
+            val intent = Intent(this, UIService::class.java)
+            intent.putExtra("orientation", requestedOrientation)
             startService(intent)
         }
         coreBtn.setOnClickListener {
             startActivity(Intent("core"))
         }
         wallPaperBtn.setOnClickListener {
-            val intent=Intent(this, UIService::class.java)
-            intent.putExtra("orientation",requestedOrientation)
-            intent.putExtra("viewName","wallPaper")
+            val intent = Intent(this, UIService::class.java)
+            intent.putExtra("orientation", requestedOrientation)
+            intent.putExtra("viewName", "wallPaper")
+            startService(intent)
+        }
+
+        openingViewBtn.setOnClickListener {
+            val intent = Intent(this, UIService::class.java)
+            intent.putExtra("orientation", requestedOrientation)
+            intent.putExtra("viewName", "opening")
             startService(intent)
         }
     }
