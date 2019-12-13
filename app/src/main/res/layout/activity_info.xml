@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
     <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            android:src="@drawable/wallpaper"
+            android:src="@drawable/info_back"
             android:id="@+id/imageView"/>
-</LinearLayout>
+    <SurfaceView
+            android:layout_width="1440px"
+            android:layout_height="900px"
+            android:id="@+id/surfaceView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+</android.support.constraint.ConstraintLayout>

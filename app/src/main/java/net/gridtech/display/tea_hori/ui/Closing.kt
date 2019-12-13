@@ -13,13 +13,13 @@ class Closing : BaseView() {
 
     override fun initLogic() {
         super.initLogic()
-//        val uri=Uri.parse("android.resource://${packageName}/${R.raw.opening}")
-//        val player=MediaPlayer()
-//        player.setDataSource(baseContext,uri)
-//        player.setOnPreparedListener {
-//            player.setDisplay(surfaceView.holder)
-//            player.start()
-//        }
-//        player.prepareAsync()
+        val uri=Uri.parse("android.resource://${packageName}/${R.raw.closing}")
+        val player=MediaPlayer()
+        player.setDataSource(baseContext,uri)
+        player.setOnPreparedListener {
+            player.setDisplay(surfaceView.holder)
+            player.start()
+        }
+        player.prepareAsync()
     }
 }
