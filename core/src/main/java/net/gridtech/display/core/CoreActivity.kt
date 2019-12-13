@@ -1,12 +1,16 @@
 package net.gridtech.display.core
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.IBinder
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_core.*
 import net.gridtech.core.Bootstrap
 import net.gridtech.core.util.hostInfoPublisher
@@ -14,14 +18,19 @@ import net.gridtech.display.core.view.BaseView
 import net.gridtech.display.core.view.EntityInfo
 
 
-class CoreActivity : BaseView() {
-    override fun shouldStartService(): Boolean = false
-    override fun shouldBindService(): Boolean = true
+class CoreActivity : BaseView(), ServiceConnection {
+    private var coreServiceBinder: CoreServiceBinder? = null
+    private val disposables = ArrayList<Disposable>()
     override fun setLayout() {
         setContentView(R.layout.activity_core)
     }
 
     override fun initLogic() {
+        bindService(
+            Intent(this, CoreService::class.java),
+            this,
+            Context.BIND_AUTO_CREATE
+        )
         updateHostInfo.setOnClickListener {
             hostInfoPublisher.onNext(
                 Bootstrap.HostInfoStub(
@@ -33,11 +42,6 @@ class CoreActivity : BaseView() {
         }
     }
 
-    override fun onServiceBind(binder: CoreServiceBinder) {
-        showHostInfo()
-        bindConnection()
-        showEntityInfo()
-    }
 
     private fun showHostInfo() {
         nodeId.setText(coreServiceBinder?.hostInfo?.nodeId)
@@ -105,6 +109,23 @@ class CoreActivity : BaseView() {
         if (token != null) {
             val im = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
+    }
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        coreServiceBinder = service as CoreServiceBinder
+        showHostInfo()
+        bindConnection()
+        showEntityInfo()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        coreServiceBinder = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (coreServiceBinder != null) {
+            unbindService(this)
         }
     }
 }

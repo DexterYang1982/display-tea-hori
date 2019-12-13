@@ -7,8 +7,6 @@ import net.gridtech.display.core.view.BaseView
 import net.gridtech.display.tea_hori.R
 
 class Opening : BaseView() {
-    override fun shouldStartService(): Boolean = false
-    override fun shouldBindService(): Boolean = true
     override fun setLayout() {
         setContentView(R.layout.activity_opening)
     }
@@ -21,7 +19,6 @@ class Opening : BaseView() {
         player.setOnPreparedListener {
             player.setDisplay(surfaceView.holder)
             player.start()
-            println("===================")
         }
         player.prepareAsync()
     }

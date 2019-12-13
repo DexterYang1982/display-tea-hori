@@ -13,10 +13,23 @@ import net.gridtech.display.core.CoreServiceBinder
 import net.gridtech.display.core.R
 
 class UIService : Service(), ServiceConnection {
-    var orientation: Int? = null
     private var coreServiceBinder: CoreServiceBinder? = null
+    private val binder: Binder = object : Binder(), UIServiceBinder {
+        override var orientation = 0
+        override fun openView(viewName: String) {
+            val vn =
+                if (orientation == 1)
+                    "${viewName}V"
+                else
+                    viewName
+            val activityIntent = Intent(vn)
+            activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(activityIntent)
+        }
+    }
+
     override fun onBind(intent: Intent): IBinder {
-        return Binder()
+        return binder
     }
 
     override fun onCreate() {
@@ -29,17 +42,6 @@ class UIService : Service(), ServiceConnection {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        orientation = intent?.getIntExtra("orientation", ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-        intent?.getStringExtra("viewName")?.apply {
-            val viewName =
-                if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
-                    "${this}V"
-                else
-                    this
-            val activityIntent=Intent(viewName)
-            activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(activityIntent)
-        }
         return START_STICKY
     }
 
@@ -57,4 +59,9 @@ class UIService : Service(), ServiceConnection {
             unbindService(this)
         }
     }
+}
+
+interface UIServiceBinder {
+    var orientation: Int
+    fun openView(viewName: String)
 }
