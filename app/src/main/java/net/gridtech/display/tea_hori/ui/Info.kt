@@ -6,7 +6,7 @@ import kotlinx.android.synthetic.main.activity_opening.*
 import net.gridtech.display.core.view.BaseView
 import net.gridtech.display.tea_hori.R
 
-class Info : BaseView() {
+class Info : UIView() {
     override fun setLayout() {
         setContentView(R.layout.activity_info)
     }
