@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
 import io.reactivex.Observable
 import net.gridtech.display.core.CoreService
@@ -16,6 +17,7 @@ import net.gridtech.machine.model.entityField.CustomField
 
 class UIService : Service(), ServiceConnection {
     private var coreServiceBinder: CoreServiceBinder? = null
+    private val handler = Handler()
     private val binder: Binder = object : Binder(), UIServiceBinder {
         override var orientation = 0
         override fun openView(viewName: String) {
@@ -32,11 +34,15 @@ class UIService : Service(), ServiceConnection {
 
     private fun listenToValueChange(csb: CoreServiceBinder) {
         trigger(csb, "openEntityId", "openFieldId", "openValueId") {
-            println("================ on open ===============")
+            handler.post {
+                (binder as UIServiceBinder).openView("opening")
+            }
 
         }
         trigger(csb, "closeEntityId", "closeFieldId", "closeValueId") {
-            println("================ on close ===============")
+            handler.post {
+                (binder as UIServiceBinder).openView("closing")
+            }
         }
     }
 
@@ -50,23 +56,23 @@ class UIService : Service(), ServiceConnection {
     ) {
         csb.bootstrap.connectionObservable().filter { it }
             .switchMap {
-                csb.dataHolder.getEntityByIdObservable<Display>(csb.hostInfo!!.nodeId).toObservable()
+                csb.dataHolder.getEntityByIdObservable<Display>(csb.hostInfo!!.nodeId)
             }.switchMap { display ->
                 val nodeIdV = csb.dataHolder.getEntityFieldByConditionObservable { f ->
                     f.alias.value == nodeIdAlias && f.nodeClassId() == display.nodeClassId()
                 }.switchMap {
-                    it.getFieldValue(display).observable
-                }
+                    (it as CustomField).getFieldValue(display).observable
+                }.map { it.name }
                 val fieldIdV = csb.dataHolder.getEntityFieldByConditionObservable { f ->
                     f.alias.value == fieldIdAlias && f.nodeClassId() == display.nodeClassId()
                 }.switchMap {
-                    it.getFieldValue(display).observable
-                }
+                    (it as CustomField).getFieldValue(display).observable
+                }.map { it.name }
                 val valueV = csb.dataHolder.getEntityFieldByConditionObservable { f ->
                     f.alias.value == valueIdAlias && f.nodeClassId() == display.nodeClassId()
                 }.switchMap {
-                    it.getFieldValue(display).observable
-                }
+                    (it as CustomField).getFieldValue(display).observable
+                }.map { it.name }
                 Observable.combineLatest(listOf(nodeIdV, fieldIdV, valueV)) {
                     Triple(it[0], it[1], it[2])
                 }
@@ -78,7 +84,9 @@ class UIService : Service(), ServiceConnection {
                 }.filter { valueDescription ->
                     valueDescription.id == it.third
                 }
-            }.subscribe { triggeredFunction() }
+            }.subscribe {
+                triggeredFunction()
+            }
     }
 
     override fun onBind(intent: Intent): IBinder {
