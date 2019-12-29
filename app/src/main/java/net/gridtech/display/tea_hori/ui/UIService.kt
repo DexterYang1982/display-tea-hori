@@ -10,6 +10,7 @@ import android.os.Binder
 import android.os.IBinder
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import net.gridtech.core.util.currentTime
 import net.gridtech.display.core.CoreService
 import net.gridtech.display.core.CoreServiceBinder
 import net.gridtech.machine.model.entity.Display
@@ -96,7 +97,9 @@ class UIService : Service(), ServiceConnection {
                 csb.dataHolder.getEntityFieldByConditionObservable { entityField ->
                     entityField is CustomField && entityField.id == it.second
                 }.switchMap { entityField ->
-                    (entityField as CustomField).getFieldValue(it.first as String).observable
+                    val fieldValue = (entityField as CustomField).getFieldValue(it.first as String)
+                    fieldValue.observable
+                        .filter { currentTime() - fieldValue.updateTime > 10000L }
                 }.filter { valueDescription ->
                     valueDescription.id == it.third
                 }
