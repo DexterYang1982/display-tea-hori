@@ -38,16 +38,16 @@ class MainActivity : UIView() {
             uiServiceBinder!!.openView("wallPaper")
         }
 
-        openingViewBtn.setOnClickListener {
-            uiServiceBinder!!.openView("opening")
+        shitViewBtn.setOnClickListener {
+            uiServiceBinder!!.openView("shit")
         }
-
-        infoViewBtn.setOnClickListener {
-            uiServiceBinder!!.openView("info")
-        }
-        closingViewBtn.setOnClickListener {
-            uiServiceBinder!!.openView("closing")
-        }
+//
+//        infoViewBtn.setOnClickListener {
+//            uiServiceBinder!!.openView("info")
+//        }
+//        closingViewBtn.setOnClickListener {
+//            uiServiceBinder!!.openView("closing")
+//        }
     }
 
 }

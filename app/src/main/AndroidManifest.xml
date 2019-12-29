@@ -32,6 +32,12 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity android:name=".ui.ShitActivity">
+            <intent-filter>
+                <action android:name="shit"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.WallPaper">
             <intent-filter>
                 <action android:name="wallPaper"/>

@@ -22,6 +22,7 @@ class UIService : Service(), ServiceConnection {
         override val startActivityPublisher = PublishSubject.create<String>()
         override var orientation = 0
         override var closingTimeout: Long = 3000L
+        override fun getCoreServiceBinder(): CoreServiceBinder? = coreServiceBinder
         override fun openView(viewName: String) {
             val vn =
                 if (orientation == 1)
@@ -34,12 +35,6 @@ class UIService : Service(), ServiceConnection {
     }
 
     private fun listenToValueChange(csb: CoreServiceBinder) {
-        trigger(csb, "openEntityId", "openFieldId", "openValueId") {
-            (binder as UIServiceBinder).openView("opening")
-        }
-        trigger(csb, "closeEntityId", "closeFieldId", "closeValueId") {
-            (binder as UIServiceBinder).openView("closing")
-        }
         closingTimeoutWatcher(csb)
     }
 
@@ -60,51 +55,6 @@ class UIService : Service(), ServiceConnection {
                 } catch (e: Throwable) {
                     3000L
                 }
-            }
-    }
-
-    @SuppressLint("CheckResult")
-    private fun trigger(
-        csb: CoreServiceBinder,
-        nodeIdAlias: String,
-        fieldIdAlias: String,
-        valueIdAlias: String,
-        triggeredFunction: () -> Unit
-    ) {
-        csb.bootstrap.connectionObservable().filter { it }
-            .switchMap {
-                csb.dataHolder.getEntityByIdObservable<Display>(csb.hostInfo!!.nodeId)
-            }.switchMap { display ->
-                val nodeIdV = csb.dataHolder.getEntityFieldByConditionObservable { f ->
-                    f.alias.value == nodeIdAlias && f.nodeClassId() == display.nodeClassId()
-                }.switchMap {
-                    (it as CustomField).getFieldValue(display).observable
-                }.map { it.name }
-                val fieldIdV = csb.dataHolder.getEntityFieldByConditionObservable { f ->
-                    f.alias.value == fieldIdAlias && f.nodeClassId() == display.nodeClassId()
-                }.switchMap {
-                    (it as CustomField).getFieldValue(display).observable
-                }.map { it.name }
-                val valueV = csb.dataHolder.getEntityFieldByConditionObservable { f ->
-                    f.alias.value == valueIdAlias && f.nodeClassId() == display.nodeClassId()
-                }.switchMap {
-                    (it as CustomField).getFieldValue(display).observable
-                }.map { it.name }
-                Observable.combineLatest(listOf(nodeIdV, fieldIdV, valueV)) {
-                    Triple(it[0], it[1], it[2])
-                }
-            }.switchMap {
-                csb.dataHolder.getEntityFieldByConditionObservable { entityField ->
-                    entityField is CustomField && entityField.id == it.second
-                }.switchMap { entityField ->
-                    val fieldValue = (entityField as CustomField).getFieldValue(it.first as String)
-                    fieldValue.observable
-                        .filter { currentTime() - fieldValue.updateTime > 10000L }
-                }.filter { valueDescription ->
-                    valueDescription.id == it.third
-                }
-            }.subscribe {
-                triggeredFunction()
             }
     }
 
@@ -147,4 +97,5 @@ interface UIServiceBinder {
     var closingTimeout: Long
     var orientation: Int
     fun openView(viewName: String)
+    fun getCoreServiceBinder(): CoreServiceBinder?
 }
